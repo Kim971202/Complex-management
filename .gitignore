@@ -1,0 +1,9 @@
+# dependencies
+node_modules
+node_modules/.bin
+
+# secret file
+.env
+
+# test json file
+test.json
