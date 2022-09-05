@@ -9,60 +9,6 @@ let {
   getDateOfMonthByFlag,
 } = require("../module/date-function");
 
-//사용가능한 EnergyType 조회
-// router.get("/getEnergyType", async (req, res, next) => {
-//   let {
-//     serviceKey = "111111111", // 서비스 인증키
-//   } = req.query;
-
-//   console.log(serviceKey);
-//   //http://localhost:3000/ems/getEnergyType?serviceKey=22222
-
-//   if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
-
-//   if (dongCode === "") resulCode = "10";
-
-//   if (hoCode === "") resulCode = "10";
-
-//   if (energyType === "") resulCode = "10";
-
-//   // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
-//   if (energyType !== "gas") {
-//     resulCode = "10";
-//   } else if (energyType !== "elec") {
-//     resulCode = "10";
-//   } else if (energyType !== "water") {
-//     resulCode = "10";
-//   } else if (energyType !== "hotWater") {
-//     resulCode = "10";
-//   } else if (energyType !== "heating") {
-//     resulCode = "10";
-//   } else if (energyType !== "aircon")
-//     if (targetUsage === "") targetUsage = "10";
-
-//   if (resulCode !== "00") {
-//     return res.json({ resultCode: "01", resultMsg: "에러" });
-//   }
-
-//   try {
-//     const sql = `SELECT energy_type AS energyType FROM t_energy_setting`;
-//     const data = await pool.query(sql);
-//     let resultList = data[0];
-
-//     let jsonResult = {
-//       resultCode: "00",
-//       resultMsg: "NORMAL_SERVICE",
-//       data: {
-//         resultList,
-//       },
-//     };
-
-//     return res.json(jsonResult);
-//   } catch (err) {
-//     return res.status(500).json(err);
-//   }
-// });
-
 //목표값 설정
 router.post("/postEnergyUseTargetSet", async (req, res, next) => {
   console.log(JSON.stringify(req.body));
@@ -79,20 +25,20 @@ router.post("/postEnergyUseTargetSet", async (req, res, next) => {
   console.log(serviceKey, dongCode, hoCode, energyType, targetUsage);
   //http://localhost:3000/ems/postEnergyUseTargetSet  {"serviceKey":"11111111","dongCode":"101","hoCode":"101","energyType":"elec", "targetUsage": "400"}
 
-  let resulCode = "00";
-  if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
+  let resultCode = "00";
+  if (serviceKey === "") resultCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
 
-  if (dongCode === "") resulCode = "10";
+  if (dongCode === "") resultCode = "10";
 
-  if (hoCode === "") resulCode = "10";
+  if (hoCode === "") resultCode = "10";
 
-  if (energyType === "") resulCode = "10";
+  if (energyType === "") resultCode = "10";
 
   if (targetUsage === "") targetUsage = "10";
 
-  console.log("resulCode=> " + resulCode);
+  console.log("resulCode=> " + resultCode);
 
-  if (resulCode === "00") {
+  if (resultCode === "00") {
     try {
       let sql =
         "delete from t_energy_target where energy_type = ? and dong_code = ? and ho_code = ? ";
@@ -107,7 +53,7 @@ router.post("/postEnergyUseTargetSet", async (req, res, next) => {
       console.log("data[0]=>" + data[0]);
 
       let jsonResult = {
-        resultCode: resulCode,
+        resultCode,
         resultMsg: "NORMAL_SERVICE",
       };
 
@@ -129,6 +75,18 @@ router.get("/getNowEnergyUse", async (req, res, next) => {
 
   console.log(serviceKey, dongCode, hoCode);
   //http://localhost:3000/ems/getNowEnergyUse?serviceKey=22222&dongCode=101&hoCode=101
+
+  let resultCode = "00";
+  if (serviceKey === "") resultCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
+
+  if (dongCode === "") resultCode = "10";
+
+  if (hoCode === "") resultCode = "10";
+
+  console.log("resulCode=> " + resultCode);
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
 
   try {
     const sql = "CALL spNowEnergyUse (?, ?) ";
@@ -311,6 +269,32 @@ router.get("/getYearEnergyUse", async (req, res, next) => {
 
   console.log(serviceKey, dongCode, hoCode, energyType, reqYear);
   //http://localhost:3000/ems/getYearEnergyUse?serviceKey=22222&dongCode=101&hoCode=101&energyType=elec&reqYear=2022
+
+  let resultCode = "00";
+  if (serviceKey === "") resultCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
+
+  if (dongCode === "") resultCode = "10";
+
+  if (hoCode === "") resultCode = "10";
+
+  if (energyType === "") resultCode = "10";
+
+  console.log("resulCode=> " + resultCode);
+  // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
+  if (
+    energyType !== "gas" &&
+    energyType !== "water" &&
+    energyType !== "elec" &&
+    energyType !== "hotWater" &&
+    energyType !== "heating" &&
+    energyType !== "aircon"
+  ) {
+    resultCode = "10";
+  }
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
+
   try {
     const sql = "CALL spYearEnergyUse (?, ?, ?, ?);";
 
@@ -344,8 +328,37 @@ router.get("/getMonthEnergyUseGraph", async (req, res, next) => {
     reqMonth = "0000", //        요청월
   } = req.query;
 
-  console.log(serviceKey, dongCode, hoCode, energyType, reqYear);
+  console.log(serviceKey, dongCode, hoCode, energyType, reqYear, reqMonth);
   //http://localhost:3000/ems/getMonthEnergyUseGraph?serviceKey=22222&dongCode=101&hoCode=101&energyType=elec&reqYear=2022&reqMonth=06
+
+  let resultCode = "00";
+  if (serviceKey === "") resultCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
+
+  if (dongCode === "") resultCode = "10";
+
+  if (hoCode === "") resultCode = "10";
+
+  if (energyType === "") resultCode = "10";
+
+  if (reqYear === "") resultCode = "10";
+
+  if (reqMonth === "") resultCode = "10";
+
+  console.log("resulCode=> " + resultCode);
+  // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
+  if (
+    energyType !== "gas" &&
+    energyType !== "water" &&
+    energyType !== "elec" &&
+    energyType !== "hotWater" &&
+    energyType !== "heating" &&
+    energyType !== "aircon"
+  ) {
+    resultCode = "10";
+  }
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
 
   try {
     const sql = "CALL spMonthEnergyUseByYear (?, ?, ?, ?)";
