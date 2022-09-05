@@ -54,7 +54,7 @@ router.get("/getParkingIOList", async (req, res, next) => {
     let size = numOfRows * (doubleDataFlag === "Y" ? 2 : 1);
     //console.log("size= %d", size);
 
-    const sql = `select DATE_FORMAT(inout_dtime, '%Y%m%d%h%i') as inoutDate, car_no as carNo, inout_flag as inoutFlag, car_flag as  carFlag
+    const sql = `select idx AS reserNo, DATE_FORMAT(inout_dtime, '%Y%m%d%h%i') as inoutDate, car_no as carNo, inout_flag as inoutFlag, car_flag as  carFlag
                  from t_parking_io where dong_code = ? and ho_code = ? and car_no like ? and car_flag like ? and inout_dtime >= ?  
                  limit ?, ?`;
 

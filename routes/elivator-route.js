@@ -50,7 +50,8 @@ router.get("/getElevatorCallLog", async (req, res, next) => {
                         CASE WHEN comm_result = 'Y' THEN '성공'
                             ELSE '실패'
                         END
-                      ) as  commResult
+                      ) as  commResult,
+                      direction
                  from t_elevator_control where dong_code = ? and ho_code = ? and control_req_dtime >= ?;`;
 
     console.log("sql=>" + sql);
