@@ -23,7 +23,6 @@
   </div>
 </template>
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
@@ -42,17 +41,6 @@ export default {
       console.log(JSON.parse(JSON.stringify(this.noticeList.data.items)));
       //console.log(this.noticeList);
       this.clearedList = JSON.parse(JSON.stringify(this.noticeList.data.items));
-    },
-    async api(url, method, data) {
-      return (
-        await axios({
-          method: method,
-          url: url,
-          datta: data,
-        }).catch((e) => {
-          console.log(e);
-        })
-      ).data;
     },
   },
 };
