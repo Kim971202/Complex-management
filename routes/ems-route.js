@@ -10,31 +10,58 @@ let {
 } = require("../module/date-function");
 
 //사용가능한 EnergyType 조회
-router.get("/getEnergyType", async (req, res, next) => {
-  let {
-    serviceKey = "111111111", // 서비스 인증키
-  } = req.query;
+// router.get("/getEnergyType", async (req, res, next) => {
+//   let {
+//     serviceKey = "111111111", // 서비스 인증키
+//   } = req.query;
 
-  console.log(serviceKey);
-  //http://localhost:3000/ems/getEnergyType?serviceKey=22222
-  try {
-    const sql = `SELECT energy_type AS energyType FROM t_energy_setting`;
-    const data = await pool.query(sql);
-    let resultList = data[0];
+//   console.log(serviceKey);
+//   //http://localhost:3000/ems/getEnergyType?serviceKey=22222
 
-    let jsonResult = {
-      resultCode: "00",
-      resultMsg: "NORMAL_SERVICE",
-      data: {
-        resultList,
-      },
-    };
+//   if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
 
-    return res.json(jsonResult);
-  } catch (err) {
-    return res.status(500).json(err);
-  }
-});
+//   if (dongCode === "") resulCode = "10";
+
+//   if (hoCode === "") resulCode = "10";
+
+//   if (energyType === "") resulCode = "10";
+
+//   // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
+//   if (energyType !== "gas") {
+//     resulCode = "10";
+//   } else if (energyType !== "elec") {
+//     resulCode = "10";
+//   } else if (energyType !== "water") {
+//     resulCode = "10";
+//   } else if (energyType !== "hotWater") {
+//     resulCode = "10";
+//   } else if (energyType !== "heating") {
+//     resulCode = "10";
+//   } else if (energyType !== "aircon")
+//     if (targetUsage === "") targetUsage = "10";
+
+//   if (resulCode !== "00") {
+//     return res.json({ resultCode: "01", resultMsg: "에러" });
+//   }
+
+//   try {
+//     const sql = `SELECT energy_type AS energyType FROM t_energy_setting`;
+//     const data = await pool.query(sql);
+//     let resultList = data[0];
+
+//     let jsonResult = {
+//       resultCode: "00",
+//       resultMsg: "NORMAL_SERVICE",
+//       data: {
+//         resultList,
+//       },
+//     };
+
+//     return res.json(jsonResult);
+//   } catch (err) {
+//     return res.status(500).json(err);
+//   }
+// });
 
 //목표값 설정
 router.post("/postEnergyUseTargetSet", async (req, res, next) => {
@@ -109,9 +136,9 @@ router.get("/getNowEnergyUse", async (req, res, next) => {
     console.log("sql=>" + sql);
     const data = await pool.query(sql, [dongCode, hoCode]);
     let resultList = data[0];
-
+    console.log(resultList[1]);
     let nowMonthUsage = "";
-    console.log(resultList.length);
+    console.log("resultList.length: " + resultList.length);
     if (resultList > 0) {
       nowMonthUsage = resultList[0].items.nowMonthUsage;
     }
@@ -123,7 +150,7 @@ router.get("/getNowEnergyUse", async (req, res, next) => {
       data: {
         dongCode,
         hoCode,
-        items: resultList[0],
+        items: resultList[1],
       },
     };
 
@@ -147,33 +174,29 @@ router.get("/getMonthEnergyUse", async (req, res, next) => {
   console.log(serviceKey, dongCode, hoCode, energyType, reqYear, reqMonth);
   //http://localhost:3000/ems/getMonthEnergyUse?serviceKey=22222&dongCode=101&hoCode=101&energyType=elec&reqYear=2022&reqMonth=07
 
-  let resulCode = "00";
-  if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
+  let resultCode = "00";
+  if (serviceKey === "") resultCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
 
-  if (dongCode === "") resulCode = "10";
+  if (dongCode === "") resultCode = "10";
 
-  if (hoCode === "") resulCode = "10";
+  if (hoCode === "") resultCode = "10";
 
-  if (energyType === "") resulCode = "10";
+  if (energyType === "") resultCode = "10";
 
   // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
-  if (energyType !== "gas") {
-    resulCode = "10";
-  } else if (energyType !== "elec") {
-    resulCode = "10";
-  } else if (energyType !== "water") {
-    resulCode = "10";
-  } else if (energyType !== "hotWater") {
-    resulCode = "10";
-  } else if (energyType !== "heating") {
-    resulCode = "10";
-  } else if (energyType !== "aircon")
-    if (targetUsage === "") targetUsage = "10";
-
-  if (resulCode !== "00") {
+  if (
+    energyType !== "gas" &&
+    energyType !== "water" &&
+    energyType !== "elec" &&
+    energyType !== "hotWater" &&
+    energyType !== "heating" &&
+    energyType !== "aircon"
+  ) {
+    resultCode = "10";
+  }
+  if (resultCode !== "00") {
     return res.json({ resultCode: "01", resultMsg: "에러" });
   }
-
   try {
     const sql = "call spMonthEnergyUseCall (?, ?, ?, ?, ?);";
 
@@ -213,6 +236,35 @@ router.get("/getDayEnergyUseGraph", async (req, res, next) => {
 
   console.log(serviceKey, dongCode, hoCode, energyType, reqYear, reqMonth);
   //http://localhost:3000/ems/getDayEnergyUseGraph?serviceKey=22222&dongCode=101&hoCode=101&energyType=elec&reqYear=2022&reqMonth=07
+
+  let resultCode = "00";
+
+  if (serviceKey === "") resultCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
+
+  if (dongCode === "") resultCode = "10";
+
+  if (hoCode === "") resultCode = "10";
+
+  if (energyType === "") resultCode = "10";
+
+  if (reqYear === "") resultCode = "10";
+
+  if (reqMonth === "") resultCode = "10";
+
+  // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
+  if (
+    energyType !== "gas" &&
+    energyType !== "water" &&
+    energyType !== "elec" &&
+    energyType !== "hotWater" &&
+    energyType !== "heating" &&
+    energyType !== "aircon"
+  ) {
+    resultCode = "10";
+  }
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
 
   try {
     const sql = "CALL spDayEnergyUseByMonth (?, ?, ?, ?, ?)";
@@ -266,13 +318,9 @@ router.get("/getYearEnergyUse", async (req, res, next) => {
 
     const data = await pool.query(sql, [energyType, reqYear, dongCode, hoCode]);
     let resultList = data[0];
-
+    console.log(resultList);
     console.log(resultList[0][0].reqYear);
-    // TODO: DB에서 호출시 null값이 나옴
-    // 일단 테스트를 위해 강제로 year 입력
-    let forceYear = "2022";
-    resultList[0][0].reqYear = forceYear;
-    ////////////////////////////////////
+
     let jsonResult = {
       resultCode: "00",
       resultMsg: "NORMAL_SERVICE",
