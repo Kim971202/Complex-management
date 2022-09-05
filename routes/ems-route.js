@@ -147,6 +147,33 @@ router.get("/getMonthEnergyUse", async (req, res, next) => {
   console.log(serviceKey, dongCode, hoCode, energyType, reqYear, reqMonth);
   //http://localhost:3000/ems/getMonthEnergyUse?serviceKey=22222&dongCode=101&hoCode=101&energyType=elec&reqYear=2022&reqMonth=07
 
+  let resulCode = "00";
+  if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
+
+  if (dongCode === "") resulCode = "10";
+
+  if (hoCode === "") resulCode = "10";
+
+  if (energyType === "") resulCode = "10";
+
+  // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
+  if (energyType !== "gas") {
+    resulCode = "10";
+  } else if (energyType !== "elec") {
+    resulCode = "10";
+  } else if (energyType !== "water") {
+    resulCode = "10";
+  } else if (energyType !== "hotWater") {
+    resulCode = "10";
+  } else if (energyType !== "heating") {
+    resulCode = "10";
+  } else if (energyType !== "aircon")
+    if (targetUsage === "") targetUsage = "10";
+
+  if (resulCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
+
   try {
     const sql = "call spMonthEnergyUseCall (?, ?, ?, ?, ?);";
 
