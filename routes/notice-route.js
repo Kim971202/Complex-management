@@ -25,6 +25,20 @@ router.get("/getNoticeList", async (req, res, next) => {
   );
   //http://localhost:3000/notice/getNoticeList?serviceKey=22222&numOfRows=5&pageNo=2&dongCode=101&hoCode=101&doubleDataFlag=Y&notiType=ALL
 
+  let resultCode = "00";
+
+  if (serviceKey === "") resultCode = "10";
+  if (numOfRows === "") resultCode = "10";
+  if (pageNo === "") resultCode = "10";
+  if (dongCode === "") resultCode = "10";
+  if (hoCode === "") resultCode = "10";
+  if (notiType === "") resultCode = "10";
+
+  console.log("resulCode=> " + resultCode);
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
+
   try {
     let sRow = (pageNo - 1) * numOfRows;
     //console.log("sRow = %d", sRow);
@@ -102,6 +116,27 @@ router.get("/getNoticeDetail", async (req, res, next) => {
 
   console.log(serviceKey, dongCode, hoCode, idx);
   //http://localhost:3000/notice/getNoticeDetail?serviceKey=22222&dongCode=101&hoCode=101&idx=1376231
+
+  let resultCode = "00";
+
+  if (serviceKey === "") resultCode = "10";
+  if (dongCode === "") resultCode = "10";
+  if (hoCode === "") resultCode = "10";
+  if (idx === "") resultCode = "10";
+
+  try {
+    const idxCheckSQL = `SELECT * FROM t_notice WHERE idx = ?`;
+    const idxCheckData = await pool.query(idxCheckSQL, [idx]);
+    console.log(idxCheckData[0][0].idx);
+  } catch (error) {
+    resultCode = "10";
+    console.log(error);
+  }
+
+  console.log("resulCode=> " + resultCode);
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
 
   try {
     const tSQL =
