@@ -23,6 +23,20 @@ router.get("/getManagementFeeList", async (req, res, next) => {
     mngYear
   );
   //http://localhost:3000/mngfee/getManagementFeeList?serviceKey=22222&numOfRows=12&pageNo=1&dongCode=101&hoCode=101&doubleDataFlag=Y&mngYear=2022
+  let resultCode = "00";
+
+  if (serviceKey === "") resultCode = "10";
+  if (numOfRows === "") resultCode = "10";
+  if (pageNo === "") resultCode = "10";
+  if (doubleDataFlag === "") resultCode = "10";
+  if (dongCode === "") resultCode = "10";
+  if (hoCode === "") resultCode = "10";
+  if (mngYear === "") resultCode = "10";
+
+  console.log("resulCode=> " + resultCode);
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
 
   try {
     let sRow = (pageNo - 1) * numOfRows;
@@ -78,17 +92,26 @@ router.get("/getManagementFeeDetail", async (req, res, next) => {
 
   console.log(serviceKey, dongCode, hoCode, mngYear, mngMonth);
   //http://localhost:3000/mngfee/getManagementFeeDetail?serviceKey=22222&dongCode=101&hoCode=101&mngYear=2022&mngMonth=06
-
   try {
+    let resultCode = "00";
+
+    if (serviceKey === "") resultCode = "10";
+    if (dongCode === "") resultCode = "10";
+    if (hoCode === "") resultCode = "10";
+    if (mngYear === "") resultCode = "10";
+    if (mngMonth === "") resultCode = "10";
+
+    console.log("resultCode=> " + resultCode);
+    if (resultCode !== "00") {
+      return res.json({ resultCode: "01", resultMsg: "에러" });
+    }
     const sql2 = "select * from t_set_management_fee order by mng_fee_order;"; //order by반드시 넣어야 함
     const data2 = await pool.query(sql2);
     const resultList2 = data2[0];
-    console.log(resultList2.length);
 
     let mngFeeItem = [];
     let mngFeeAlias = [];
     let mngFee = [];
-
     for (i = 0; i < resultList2.length; i++) {
       mngFeeItem[i] = resultList2[i].mng_fee_item;
       mngFeeAlias[i] = resultList2[i].mng_fee_alias;
@@ -126,8 +149,9 @@ router.get("/getManagementFeeDetail", async (req, res, next) => {
     }
     console.log("totalMng: " + totalMng);
     //////////////////////////////////////////////////////////////////////////////////
+
     let jsonResult = {
-      resultCode: "00",
+      resultCode: resultCode,
       resultMsg: "NORMAL_SERVICE",
       data: {
         mngYear,
