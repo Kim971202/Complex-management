@@ -4,12 +4,11 @@
  * 수정일: 2022년09월06일
  * 파일설명: Redis의 key & value 속성을 이용하여 사용자의 servicekey를 인증하는 스크립트 이다.
  */
-
 const redis = require("redis");
 const redisInfo = {
-  host: "127.0.0.1",
-  port: 6379,
-  db: 0,
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  db: process.env.REDIS_DB,
 };
 
 const client = redis.createClient(redisInfo);
@@ -18,19 +17,35 @@ client.on("error", (err) => {
 });
 
 client.on("ready", () => {
-  console.log("redis is ready");
+  console.log("redis is ready to start");
 });
+let result = "";
 
-function checkServiceKey(serviceKey) {
-  let isKeyValid = false;
-
-  client.get(serviceKey, (error, result) => {
-    console.log(result);
-    serviceKey = result;
+async function checkServiceKey(serviceKey) {
+  await client.get(serviceKey, (err, value) => {
+    result = value;
+    console.log("value: " + value);
+    if (!value) {
+      console.log("Invalid ServiceKey has given");
+    } else {
+      console.log("Valid ServiceKey has given");
+    }
+    // checkServiceKeyResult();
   });
-  if (result == "") {
-    throw new Error("Invalid ServiceKey has accessed");
+}
+
+function checkServiceKeyResult() {
+  console.log("result: " + result);
+  if (!result) {
+    return false;
+  } else {
+    return true;
   }
 }
 
-checkServiceKey("wrongServiceKey");
+//TODO: Set ServiceKey
+
+module.exports = {
+  checkServiceKey,
+  checkServiceKeyResult,
+};
