@@ -9,6 +9,10 @@ let {
   getDateOfMonthByFlag,
 } = require("../module/date-function");
 
+let {
+  checkServiceKey,
+  checkServiceKeyResult,
+} = require("../module/authentication");
 router.get("/getParcelList", async (req, res, next) => {
   let {
     serviceKey = "111111111", // 서비스 인증키
@@ -40,8 +44,21 @@ router.get("/getParcelList", async (req, res, next) => {
   else if (parcelStatus === "RECEIPT") parcelStatus_ = "2";
   console.log("parcelStatus_=>" + parcelStatus_);
 
-  let arrivalTime = viewPeriodDate(viewPeriod);
+  let resultCode = "00";
+  if (serviceKey === "") resultCode = "10";
+  if (numOfRows === "") resultCode = "10";
+  if (pageNo === "") resultCode = "10";
+  if (dongCode === "") resultCode = "10";
+  if (hoCode === "") resultCode = "10";
 
+  console.log("checkServiceKey: " + (await checkServiceKey(serviceKey)));
+
+  console.log("resulCode=> " + resultCode);
+  if (resultCode !== "00") {
+    return res.json({ resultCode: "01", resultMsg: "에러" });
+  }
+
+  let arrivalTime = viewPeriodDate(viewPeriod);
   try {
     let sRow = (pageNo - 1) * numOfRows;
     //console.log("sRow = %d", sRow);
@@ -67,8 +84,12 @@ router.get("/getParcelList", async (req, res, next) => {
       Number(size),
     ]);
     let resultList = data[0];
-    console.log("sql=>" + sql);
-    console.log("resultList=>" + resultList);
+    console.log("checkServiceKeyResult: " + (await checkServiceKeyResult()));
+    if (checkServiceKeyResult() == false) {
+      return res.json({ resultCode: "01", resultMsg: "에러" });
+    }
+    // console.log("sql=>" + sql);
+    // console.log("resultList=>" + resultList);
     const sql2 =
       "select count(*) as cnt from t_delivery where dong_code = ? and ho_code = ? and arrival_time >= ? and parcel_status LIKE ?  ";
     const data2 = await pool.query(sql2, [
@@ -79,9 +100,8 @@ router.get("/getParcelList", async (req, res, next) => {
     ]);
 
     let resultCnt = data2[0];
-
     let jsonResult = {
-      resultCode: "00",
+      resultCode,
       resultMsg: "NORMAL_SERVICE",
       numOfRows,
       pageNo,
@@ -95,7 +115,7 @@ router.get("/getParcelList", async (req, res, next) => {
         items: resultList,
       },
     };
-    console.log(resultList);
+    // console.log(resultList);
 
     return res.json(jsonResult);
   } catch (err) {
