@@ -84,9 +84,11 @@ router.get("/getParcelList", async (req, res, next) => {
       Number(size),
     ]);
     let resultList = data[0];
-    console.log("checkServiceKeyResult: " + (await checkServiceKeyResult()));
     if (checkServiceKeyResult() == false) {
-      return res.json({ resultCode: "01", resultMsg: "에러" });
+      return res.json({
+        resultCode: "30",
+        resultMsg: "등록되지 않은 서비스키 입니다.",
+      });
     }
     // console.log("sql=>" + sql);
     // console.log("resultList=>" + resultList);
