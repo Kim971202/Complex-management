@@ -1,5 +1,4 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -19,10 +18,7 @@ const logRoute = require("./routes/log-route");
 const contractRoute = require("./routes/contract-route");
 const homeInfoRoute = require("./routes/homeInfo-route");
 const emsRoute = require("./routes/ems-route");
-//////////////////////////////////////////////
 const etcRoute = require("./routes/etc-route");
-//////////////////////////////////////////////
-
 const redisRouter = require("./routes/redis-route");
 
 const app = express();
