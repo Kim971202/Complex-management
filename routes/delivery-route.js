@@ -9,10 +9,7 @@ let {
   getDateOfMonthByFlag,
 } = require("../module/date-function");
 
-let {
-  checkServiceKey,
-  checkServiceKeyResult,
-} = require("../module/authentication");
+let { checkServiceKeyResult } = require("../module/authentication");
 router.get("/getParcelList", async (req, res, next) => {
   let {
     serviceKey = "111111111", // 서비스 인증키
@@ -51,8 +48,12 @@ router.get("/getParcelList", async (req, res, next) => {
   if (dongCode === "") resultCode = "10";
   if (hoCode === "") resultCode = "10";
 
-  console.log("checkServiceKey: " + (await checkServiceKey(serviceKey)));
-
+  if ((await checkServiceKeyResult(serviceKey)) == false) {
+    return res.json({
+      resultCode: "30",
+      resultMsg: "등록되지 않은 서비스키 입니다.",
+    });
+  }
   console.log("resulCode=> " + resultCode);
   if (resultCode !== "00") {
     return res.json({ resultCode: "01", resultMsg: "에러" });
@@ -84,12 +85,7 @@ router.get("/getParcelList", async (req, res, next) => {
       Number(size),
     ]);
     let resultList = data[0];
-    if (checkServiceKeyResult() == false) {
-      return res.json({
-        resultCode: "30",
-        resultMsg: "등록되지 않은 서비스키 입니다.",
-      });
-    }
+
     // console.log("sql=>" + sql);
     // console.log("resultList=>" + resultList);
     const sql2 =
