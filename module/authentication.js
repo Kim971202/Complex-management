@@ -4,6 +4,7 @@
  * 수정일: 2022년09월07일
  * 파일설명: Redis의 key & value 속성을 이용하여 사용자의 servicekey를 인증하는 스크립트 이다.
  */
+console.log("authentication.js called");
 const redis = require("redis");
 const util = require("util");
 const redisInfo = {
@@ -22,7 +23,7 @@ client.on("ready", () => {
 });
 
 // Redis 3.X 버전에서는 Promises관련 지원 없음 (4.X 버전부터 지원)
-let get = util.promisify(client.get).bind(client);
+let getAsync = util.promisify(client.get).bind(client);
 
 let result = "";
 async function checkServiceKeyResult(serviceKey) {
@@ -36,7 +37,7 @@ async function checkServiceKeyResult(serviceKey) {
     }
   });
   try {
-    let value = await get(serviceKey);
+    let value = await getAsync(serviceKey);
     console.log(`use promisify: ${value}`);
     console.log(result);
     if (!result) {
