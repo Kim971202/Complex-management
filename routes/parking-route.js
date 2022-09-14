@@ -215,7 +215,7 @@ router.post("/postParkingResv", async (req, res, next) => {
     dongCode = "", //     동코드
     hoCode = "", //       호코드
     visStartDate = "", // 방문예정일자
-    visStartCnt = "", //  방문예정일수
+    visStartCnt = "1", //  방문예정일수
     carNo = "", //        차량번호
     resvMethod = "", //   예약방법:월패드(W)/스마트폰(S)
   } = req.body;
@@ -235,7 +235,7 @@ router.post("/postParkingResv", async (req, res, next) => {
   if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
   if (dongCode === "") resulCode = "10";
   if (hoCode === "") resulCode = "10";
-  //if (visStartDate === "") resulCode = "10";
+  if (visStartDate === "") resulCode = "10";
   if (isDate(visStartDate) === 0) visStartDate = strDateFormat(visStartDate);
   else resulCode = "10";
   if (visStartCnt === "") resulCode = "10";
