@@ -229,7 +229,7 @@ router.post("/postParkingResv", async (req, res, next) => {
     carNo,
     resvMethod
   );
-  //http://localhost:3000/parking/postParkingResv  {"serviceKey":"11111111","dongCode":"101","hoCode":"101","visStartDate":"202206281359","visStartCnt":"1","carNo":"1가1111", "resvMethod": "W"}
+  //http://localhost:3000/parking/postParkingResv  {"serviceKey":"11111111","dongCode":"101","hoCode":"101","visStartDate":"20220628","visStartCnt":"1","carNo":"1가1111", "resvMethod": "W"}
 
   let resulCode = "00";
   if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
