@@ -48,7 +48,7 @@ router.get("/getVoteAgendaList", async (req, res, next) => {
                       DATE_FORMAT(a.v_start_dtime, '%Y%m%d%h%i%s') as vStartDate, 
                       DATE_FORMAT(a.v_end_dtime, '%Y%m%d%h%i%s') as vEndDate, 
                       a.vote_end_flag as voteResult,
-                      IFNULL(b.idx, '0') as joinResult
+                      (b.idx IS NOT NULL) as joinResult
                       from t_vote_agenda a 
                             left join (select idx from t_voters  where dong_code = '${dongCode}' and ho_code = '${hoCode}') b
                             on a.idx = b.idx
