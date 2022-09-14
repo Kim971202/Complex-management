@@ -52,7 +52,7 @@ router.get("/getVoteAgendaList", async (req, res, next) => {
                       from t_vote_agenda a 
                             left join (select idx from t_voters  where dong_code = '${dongCode}' and ho_code = '${hoCode}') b
                             on a.idx = b.idx
-               where v_start_dtime >= ? 
+               where v_start_dtime >= ?
                limit ?, ? `;
 
     console.log("sql=>" + sql);
@@ -62,7 +62,6 @@ router.get("/getVoteAgendaList", async (req, res, next) => {
 
     const sql2 = `select count(*) as cnt from t_vote_agenda where v_start_dtime >= ? `;
     const data2 = await pool.query(sql2, [startDate]);
-
     let resultCnt = data2[0];
 
     console.log("resultList : ", resultList);

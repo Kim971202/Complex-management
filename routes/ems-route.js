@@ -279,7 +279,6 @@ router.get("/getYearEnergyUse", async (req, res, next) => {
 
   if (energyType === "") resultCode = "10";
 
-  console.log("resulCode=> " + resultCode);
   // energyType이 6개 항목 이외에 것이 들어올경우 예외 처리
   if (
     energyType !== "gas" &&
@@ -295,6 +294,7 @@ router.get("/getYearEnergyUse", async (req, res, next) => {
     return res.json({ resultCode: "01", resultMsg: "에러" });
   }
 
+  console.log("resulCode=> " + resultCode);
   try {
     const sql = "CALL spYearEnergyUse (?, ?, ?, ?);";
 
