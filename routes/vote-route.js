@@ -188,7 +188,7 @@ router.post("/postVote", async (req, res, next) => {
   } = req.body;
 
   console.log(serviceKey, dongCode, hoCode, idx, choiceItemNo, voteMethod);
-  //http://localhost:3000/vote/postVote  {"serviceKey":"11111111","dongCode":"101","hoCode":"101","idx":"3","choiceItemNo":"1",“voteMethod”: “W”}
+  //http://localhost:3000/vote/postVote  {"serviceKey":"11111111","dongCode":"101","hoCode":"101","idx":"3","choiceItemNo":"1","voteMethod": "W"}
 
   let resultCode = "00";
   let resultMsg = "투표 처리가 되었습니다.";
