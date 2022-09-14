@@ -10,7 +10,7 @@ let {
 } = require("../module/date-function");
 
 //민원신청타입코드 조회
-router.get("/getApplicationCompaintType", async (req, res, next) => {
+router.get("/getApplicationComplaintType", async (req, res, next) => {
   let {
     serviceKey = "111111111", // 서비스 인증키
     numOfRows = 10, //           페이지 당 결과수
@@ -169,7 +169,7 @@ router.get("/getApplicationComplaintList", async (req, res, next) => {
 });
 
 //민원신청 상세보기 조회
-router.get("/getApplicationCompaintDetail", async (req, res, next) => {
+router.get("/getApplicationComplaintDetail", async (req, res, next) => {
   let {
     serviceKey = "111111111", // 서비스 인증키
     numOfRows = 10, //           페이지 당 결과수
