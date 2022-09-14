@@ -259,7 +259,7 @@ router.get("/getApplicationCompaintDetail", async (req, res, next) => {
 });
 
 //민원신청 등록
-router.post("/postApplicationCompaint", async (req, res, next) => {
+router.post("/postApplicationComplaint", async (req, res, next) => {
   // console.log(JSON.stringify(req.body));
   // console.log(req.body);
 
@@ -284,7 +284,7 @@ router.post("/postApplicationCompaint", async (req, res, next) => {
     appMethod,
     appContent
   );
-  //http://localhost:3000/complaint/postApplicationCompaint  {"serviceKey":"11111111","dongCode":"101","hoCode":"1","appTitle":"하자보수 신청 건","appDate":"20220718","appCode": "1", “appMethod”: “W”}
+  //http://localhost:3000/complaint/postApplicationComplaint  {"serviceKey":"11111111","dongCode":"101","hoCode":"1","appTitle":"하자보수 신청 건","appDate":"20220718","appCode": "1", “appMethod”: “W”}
 
   let resulCode = "00";
   if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
@@ -338,7 +338,7 @@ router.post("/postApplicationCompaint", async (req, res, next) => {
 });
 
 //민원신청 수정
-router.put("/putApplicationCompaint", async (req, res, next) => {
+router.put("/putApplicationComplaint", async (req, res, next) => {
   // console.log(JSON.stringify(req.body));
   // console.log(req.body);
 
@@ -367,7 +367,7 @@ router.put("/putApplicationCompaint", async (req, res, next) => {
     appContent,
     progressStatus
   );
-  //http://localhost:3000/complaint/putApplicationCompaint  {"serviceKey":"11111111","dongCode":"101", "idx":"1", "hoCode":"1","appTitle":"하자보수 신청 건","appDate":"20220718","appCode": "1", “appMethod”: “W”, "progressStatus":"2"}
+  //http://localhost:3000/complaint/putApplicationComplaint  {"serviceKey":"11111111","dongCode":"101", "idx":"1", "hoCode":"1","appTitle":"하자보수 신청 건","appDate":"20220718","appCode": "1", “appMethod”: “W”, "progressStatus":"2"}
 
   let resulCode = "00";
   if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
@@ -401,7 +401,7 @@ router.put("/putApplicationCompaint", async (req, res, next) => {
                         app_code = ?, 
                         app_method = ?, 
                         app_content = ?,
-                        progressStatus = ? 
+                        progress_status = ? 
                  where idx = ? `;
       console.log("sql=>" + sql);
       const data = await pool.query(sql, [
@@ -429,7 +429,7 @@ router.put("/putApplicationCompaint", async (req, res, next) => {
 });
 
 //민원정보 삭제
-router.delete("/delApplicationCompaint", async (req, res, next) => {
+router.delete("/delApplicationComplaint:idx", async (req, res, next) => {
   // console.log(JSON.stringify(req.body));
   // console.log(req.body);
 
@@ -441,7 +441,7 @@ router.delete("/delApplicationCompaint", async (req, res, next) => {
   } = req.body;
 
   console.log(serviceKey, dongCode, hoCode, idx);
-  //http://localhost:3000/complaint/delApplicationCompaint  {"serviceKey":"11111111", “dongCode”: “101”, “hoCode”: “101”, “idx”: “1”}
+  //http://localhost:3000/complaint/delApplicationComplaint:idx  {"serviceKey":"11111111", “dongCode”: “101”, “hoCode”: “101”, “idx”: “1”}
 
   let resulCode = "00";
 
