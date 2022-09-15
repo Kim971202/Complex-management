@@ -48,7 +48,7 @@ router.get("/getVoteAgendaList", async (req, res, next) => {
                       DATE_FORMAT(a.v_start_dtime, '%Y%m%d%h%i%s') as vStartDate, 
                       DATE_FORMAT(a.v_end_dtime, '%Y%m%d%h%i%s') as vEndDate, 
                       a.vote_end_flag as voteResult,
-                      (b.idx IS NOT NULL) as joinResult
+                       (b.idx IS NOT NULL) as joinResult
                       from t_vote_agenda a 
                             left join (select idx from t_voters  where dong_code = '${dongCode}' and ho_code = '${hoCode}') b
                             on a.idx = b.idx
@@ -206,19 +206,38 @@ router.post("/postVote", async (req, res, next) => {
   if (voteMethod === "") resultCode = "10";
 
   //투표가 마감되었거나 현재날짜가 마감일이후이거나 투표한 세대이면 등록처리 못하게
-  let sSQL = `select a.idx from t_vote_agenda a inner join t_voters b
-             on a.idx = b.idx
-             where a.idx = ? 
-                and (a.vote_end_flag = 'Y' or a.fin_end_dtime < now() or (b.dong_code = ? and b.ho_code = ?)) `;
-
-  //console.log("sSQL=>" + sSQL);
+  let sSQL = `select (a.idx IS NOT NULL) AS idx,
+                  CASE
+                        WHEN a.vote_end_flag = 'Y'
+                        THEN 'VOTE_FLAG_Y'
+                        WHEN  a.fin_end_dtime < now()
+                        THEN 'FIN_END_DTIME'
+                        WHEN a.v_end_dtime < now()
+                        THEN 'VOTE_END_DTIME'
+                      END AS voteStatus 
+                  FROM t_vote_agenda a INNER JOIN t_voters b
+                    ON a.idx = b.idx
+                    WHERE a.idx = ?
+                      AND (a.vote_end_flag = 'Y' or a.fin_end_dtime < now() or (b.dong_code = ? and b.ho_code = ?))
+                          UNION ALL
+                          SELECT 0 AS idx, 'USER_CAN_VOTE' AS idx FROM t_vote_agenda LIMIT 1;`;
 
   const data = await pool.query(sSQL, [idx, dongCode, hoCode]);
 
   let result = data[0];
   console.log("resultList.length :" + result.length);
 
-  if (result.length > 0) resultCode = "10";
+  console.log(result[0].idx);
+  console.log(result[0].voteStatus);
+
+  if (
+    result[0].idx == 1 ||
+    result[0].voteStatus == "VOTE_FLAG_Y" ||
+    result[0].voteStatus == "FIN_END_DTIME" ||
+    result[0].voteStatus == "VOTE_END_DTIME"
+  ) {
+    resultCode = "10";
+  }
 
   console.log("resulCode=> " + resultCode);
 

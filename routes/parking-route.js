@@ -328,7 +328,7 @@ router.delete("/delParkingResv", async (req, res, next) => {
   } = req.body;
 
   console.log(serviceKey, resvNo);
-  //http://localhost:3000/parking/delParkingResv  {"serviceKey":"11111111", "resvNo": "13"}
+  //http://localhost:3000/parking/delParkingResv  { "serviceKey": "11111111", "dongCode": "101", "hoCode": "101", "resvNo": "13" }
 
   let resulCode = "00";
   if (serviceKey === "") resulCode = "10"; // INVALID_REQUEST_PARAMETER_ERROR
