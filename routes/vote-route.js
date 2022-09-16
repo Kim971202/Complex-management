@@ -48,7 +48,7 @@ router.get("/getVoteAgendaList", async (req, res, next) => {
                       DATE_FORMAT(a.v_start_dtime, '%Y%m%d%h%i%s') as vStartDate, 
                       DATE_FORMAT(a.v_end_dtime, '%Y%m%d%h%i%s') as vEndDate, 
                       a.vote_end_flag as voteResult,
-                       (b.idx IS NOT NULL) as joinResult
+                      (b.idx IS NOT NULL) as joinResult
                       from t_vote_agenda a 
                             left join (select idx from t_voters  where dong_code = '${dongCode}' and ho_code = '${hoCode}') b
                             on a.idx = b.idx
@@ -306,11 +306,11 @@ router.get("/getVoteResult", async (req, res, next) => {
                   participation_num as participationNum, vote_rate as voteRate,
                   b.item_no as itemNo, item_content as itemContent,  
                   (b.votes_number + b.votes_number_off) as votesNumber,
-                  CONCAT(ROUND((100*b.votes_number + b.votes_number_off)/participation_num, 2), '%') as getVotesRate
+                  CONCAT(ROUND((100*(b.votes_number + b.votes_number_off))/participation_num, 2), '%') as getVotesRate
                from t_vote_agenda a inner join t_vote_items b
                on a.idx = b.idx
-               where a.vote_end_flag = 'Y' and fin_end_dtime < now() and a.idx = ? `;
-
+               where a.idx = ? `;
+    //  a.vote_end_flag = 'Y' and fin_end_dtime < now() and
     console.log("sql=>" + sql);
 
     const data = await pool.query(sql, [Number(idx)]);
