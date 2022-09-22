@@ -39,6 +39,31 @@ router.get("/getLocationList", async (req, res, next) => {
   let loc_tb = "";
   let fSQL = "";
 
+  // 서버의 IP를 구하는 Function
+  var os = require("os");
+
+  function getServerIp() {
+    var ifaces = os.networkInterfaces();
+
+    var result = "";
+
+    for (var dev in ifaces) {
+      var alias = 0;
+
+      ifaces[dev].forEach(function (details) {
+        if (details.family == "IPv4" && details.internal === false) {
+          result = details.address;
+
+          ++alias;
+        }
+      });
+    }
+
+    return result;
+  }
+
+  console.log("Servre IP: " + getServerIp());
+
   if (locFlag === "FAMILY") {
     fSQL = `select 0 as idx, 
                     tag_id as tagId, tag_name as tagName, tag_desc as tagDesc, pos_desc as posDesc,
@@ -51,7 +76,7 @@ router.get("/getLocationList", async (req, res, next) => {
   } else if (locFlag === "PARKING") {
     fSQL = `select  idx, 
                     tag_id as tagId, tag_name as tagName, tag_desc as tagDesc, pos_desc as posDesc,
-                    floor_name as floorName, building_name as buildingName, pos_x as posX, pos_y as posY, '' as imgURL,
+                    floor_name as floorName, building_name as buildingName, pos_x as posX, pos_y as posY, 'http://${getServerIp()}:3000/public/images/parkingImages/httplocalhost3000public_101_2F.png' as imgURL,
                     DATE_FORMAT(pos_update_date, '%Y%m%d%h%i%s') as posUpdateDate
                     from t_parking_loc 
                     where pos_update_date >= '${sDate}' and dong_code = ? and ho_code = ?`;

@@ -295,7 +295,6 @@ router.get("/getVoteResult", async (req, res, next) => {
     let sRow = (pageNo - 1) * numOfRows;
     //console.log("sRow = %d", sRow);
     //ex: 2page start = (2-1) * 10
-
     let size = numOfRows * (doubleDataFlag === "Y" ? 2 : 1);
     //console.log("size= %d", size);
     //투표가 마감되었거나 현재날짜가 마감일이후인 건
@@ -303,7 +302,7 @@ router.get("/getVoteResult", async (req, res, next) => {
                   DATE_FORMAT(a.v_start_dtime, '%Y%m%d%h%i%s') as vStartDate, 
                   DATE_FORMAT(a.v_end_dtime, '%Y%m%d%h%i%s') as vEndDate, 
                   a.vote_end_flag as voteResult, a.subjects_num as subjectsNum,
-                  participation_num as participationNum, vote_rate as voteRate,
+                  participation_num as participationNum, CONCAT(ROUND((participation_num / subjects_num) * 100)) as voteRate,
                   b.item_no as itemNo, item_content as itemContent,  
                   (b.votes_number + b.votes_number_off) as votesNumber,
                   CONCAT(ROUND((100*(b.votes_number + b.votes_number_off))/participation_num, 2), '%') as getVotesRate
@@ -315,6 +314,7 @@ router.get("/getVoteResult", async (req, res, next) => {
 
     const data = await pool.query(sql, [Number(idx)]);
 
+    var a = vRate;
     let resultList = "";
     let voteTitle = "";
     let voteDesc = "";
