@@ -314,7 +314,6 @@ router.get("/getVoteResult", async (req, res, next) => {
 
     const data = await pool.query(sql, [Number(idx)]);
 
-    var a = vRate;
     let resultList = "";
     let voteTitle = "";
     let voteDesc = "";
